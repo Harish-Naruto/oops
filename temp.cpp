@@ -1,110 +1,146 @@
-#include <iostream>
+#include<iostream>
+#include<string>
 using namespace std;
 
-class Complex {
-private:
-    double real;
-    double imag;
+class StudData;
+
+class Student {
+    string name;
+    int roll_no;
+    string cls;
+    string division;    // Changed from char* to string
+    string dob;
+    string bloodgroup;  // Changed from char* to string
+    static int count;
 
 public:
-    // Constructor with default parameters
-    Complex(double r = 0, double i = 0) : real(r), imag(i) {}
-
-    // Friend functions for input/output
-    friend istream& operator>>(istream& input, Complex& c) {
-        input >> c.real >> c.imag;
-        return input;
+    Student()          // Default Constructor
+    {
+        name = "";
+        roll_no = 0;
+        cls = "";
+        division = "";
+        dob = "dd/mm/yyyy";
+        bloodgroup = "";
     }
 
-    friend ostream& operator<<(ostream& output, const Complex& c) {
-        output << c.real << " + " << c.imag << "i";
-        return output;
+    // Removed destructor since we no longer use dynamic memory for division and bloodgroup
+    
+    static int getCount()
+    {
+        return count;
     }
 
-    // Arithmetic operators
-    Complex operator+(const Complex& other) const {
-        return Complex(real + other.real, imag + other.imag);
+    void getData(StudData*);
+    void dispData(StudData*);
+};
+
+class StudData {
+    string caddress;
+    long int* telno;
+    long int* dlno;
+    friend class Student;
+
+public:
+    StudData()
+    {
+        caddress = "";
+        telno = new long;
+        dlno = new long;
     }
 
-    Complex operator*(const Complex& other) const {
-        return Complex(
-            real * other.real - imag * other.imag,
-            real * other.imag + imag * other.real
-        );
+    void getStudData()
+    {
+        cout << "Enter Contact Address : ";
+        cin.get();
+        getline(cin, caddress);
+        cout << "Enter Telephone Number : ";
+        cin >> *telno;
+        cout << "Enter Driving License Number : ";
+        cin >> *dlno;
+    }
+
+    void dispStudData()
+    {
+        cout << "Contact Address : " << caddress << endl;
+        cout << "Telephone Number : " << *telno << endl;
+        cout << "Driving License Number : " << *dlno << endl;
+    }
+
+    ~StudData()
+    {
+        delete telno;
+        delete dlno;
     }
 };
 
-class ComplexCalculator {
-public:
-    static void run() {
-        Complex num1, num2;
-        char choice;
+inline void Student::getData(StudData* st)
+{
+    cout << "Enter Student Name : ";
+    getline(cin, name);
+    cout << "Enter Roll Number : ";
+    cin >> roll_no;
+    cout << "Enter Class : ";
+    cin.get();
+    getline(cin, cls);
+    cout << "Enter Division : ";
+    cin.get();
+    getline(cin, division);  // Changed to use getline for string
+    cout << "Enter Date of Birth : ";
+    getline(cin, dob);
+    cout << "Enter Blood Group : ";
+    getline(cin, bloodgroup);  // Changed to use getline for string
+    st->getStudData();
+    count++;
+}
 
-        do {
-            // Input complex numbers
-            cout << "\nEnter Real and Imaginary parts of Complex Number 1:\n";
-            cin >> num1;
-            cout << "Enter Real and Imaginary parts of Complex Number 2:\n";
-            cin >> num2;
+inline void Student::dispData(StudData* st1)
+{
+    cout << "Student Name : " << name << endl;
+    cout << "Roll Number : " << roll_no << endl;
+    cout << "Class : " << cls << endl;
+    cout << "Division : " << division << endl;
+    cout << "Date of Birth : " << dob << endl;
+    cout << "Blood Group : " << bloodgroup << endl;
+    st1->dispStudData();
+}
 
-            // Display entered numbers
-            cout << "\nComplex Number 1: " << num1 << endl;
-            cout << "Complex Number 2: " << num2 << endl;
+int Student::count;
 
-            // Menu loop
-            bool continueCalculations = true;
-            while (continueCalculations) {
-                displayMenu();
-                int option = getMenuChoice();
+int main()
+{
+    Student* stud1[100];
+    StudData* stud2[100];
+    int n = 0;
+    char ch;
 
-                switch (option) {
-                    case 1:
-                        cout << "Addition: " << (num1 + num2) << endl;
-                        break;
-                    case 2:
-                        cout << "Multiplication: " << (num1 * num2) << endl;
-                        break;
-                    case 3:
-                        return;
-                    default:
-                        cout << "Invalid option!\n";
-                        continue;
-                }
+    do
+    {
+        stud1[n] = new Student;
+        stud2[n] = new StudData;
+        stud1[n]->getData(stud2[n]);
+        n++;
+        cout << "Do you want to add another student (y/n) : ";
+        cin >> ch;
+        cin.get();  // Added to consume newline
+        cout << endl;
+    } while (ch == 'y' || ch == 'Y');
 
-                continueCalculations = askToContinue();
-            }
-
-            cout << "Do you want to enter new numbers? (y/n): ";
-            cin >> choice;
-        } while (choice == 'y' || choice == 'Y');
-
-        cout << "Thanks for using this program!\n";
+    for(int i = 0; i < n; i++)
+    {
+        cout << "---------------------------------------------------------------" << endl;
+        stud1[i]->dispData(stud2[i]);
     }
 
-private:
-    static void displayMenu() {
-        cout << "\n********** MENU **********\n"
-             << "1. Addition of Complex Numbers\n"
-             << "2. Multiplication of Complex Numbers\n"
-             << "3. Exit\n";
+    cout << "---------------------------------------------------------------" << endl;
+    cout << "Total Students : " << Student::getCount();
+    cout << endl << "---------------------------------------------------------------" << endl;
+
+    for(int i = 0; i < n; i++)
+    {
+        delete stud1[i];
+        delete stud2[i];
     }
 
-    static int getMenuChoice() {
-        int choice;
-        cout << "Enter your choice (1-3): ";
-        cin >> choice;
-        return choice;
-    }
-
-    static bool askToContinue() {
-        char response;
-        cout << "Do you want to perform another operation? (y/n): ";
-        cin >> response;
-        return (response == 'y' || response == 'Y');
-    }
-};
-
-int main() {
-    ComplexCalculator::run();
     return 0;
 }

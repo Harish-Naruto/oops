@@ -8,13 +8,22 @@ class student{
     string cls;
     string division;
     string dob;
-    string booldgroup;
+    string bloodgroup;
     static int count;
 
     public:
     
     student(){
         name ="";
-        roll_no
+        roll_no=0;
+        division="";
+        dob="dd/mm/yyyy";
+        bloodgroup = "";
+
     }
-}
+    static int getcount(){
+        return count;
+    }
+
+    void getdata()
+};

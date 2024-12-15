@@ -1,61 +1,80 @@
-/*
-Write a C++ program that creates an output file, writes information to it, closes the file, open it again as an input file and read the information from the file.
-*/
-
-#include<iostream>
-#include<fstream>
+#include <iostream>
+#include <fstream>
+#include <string>
 using namespace std;
-class Employee              // declaring class employee
-{
- string Name;
- int ID;
- double salary;
- public:
- void accept()
- {
- cout<<"\n Name : ";
- cin.ignore();
-getline(cin,Name);
- cout<<"\n Id : ";
- cin>>ID;
- cout<<"\n Salary : ";
- cin>>salary;
- }
- void display()
- {
- cout<<"\n Name : "<<Name;
- cout<<"\n Id : "<<ID;
- cout<<"\n Salary : "<<salary<<endl;
- }
+
+class Employee {
+    string Name;
+    int ID;
+    double salary;
+public:
+    void accept() {
+        cout << "\nName: ";
+        cin.ignore();
+        getline(cin, Name);
+        cout << "ID: ";
+        cin >> ID;
+        cout << "Salary: ";
+        cin >> salary;
+    }
+
+    // Write data to file directly as text
+    void writeToFile(ofstream& file) {
+        file << Name << endl;
+        file << ID << endl;
+        file << salary << endl;
+    }
+
+    // Read data from file
+    void readFromFile(ifstream& file) {
+        getline(file, Name);
+        file >> ID;
+        file >> salary;
+        file.ignore(); 
+    }
+
+    void display() {
+        cout << "\nName: " << Name;
+        cout << "\nID: " << ID;
+        cout << "\nSalary: " << salary << endl;
+    }
 };
 
-int main()
-{
- Employee o[50];
- fstream f;
- int i,n;
+int main() {
+    Employee emp;
+    int n, i;
 
- f.open("demo.txt",ios::out);
- cout<<"\n Enter the number of employees you want to store : ";
- cin>>n;
- for(i=0;i<n;i++)
- {
- cout<<"\n Enter information of Employee "<<i+1<<"\n";
- o[i].accept();
- f.write((char*)&o[i],sizeof o[i]);
- }
+    
+    cout << "Enter number of employees: ";
+    cin >> n;
 
- f.close();
+   
+    ofstream outFile("employees.txt");
+    
+    
+    outFile << n << endl;
+    
+    for(i = 0; i < n; i++) {
+        cout << "\nEnter details of Employee " << i+1;
+        emp.accept();
+        emp.writeToFile(outFile);
+    }
+    outFile.close();
 
- f.open("demo.txt",ios::in);
- cout<<"\n Information of Employees is as follows : \n";
- for(i=0;i<n;i++)
- {
- cout<<"\nEmployee "<<i+1<<"\n";
- f.write((char*)&o[i],sizeof o[i]);
- o[i].display();
- }
- f.close();
- 
- return 0;
+    
+    ifstream inFile("employees.txt");
+    int total;
+    inFile >> total; 
+    inFile.ignore();  
+
+    cout << "\nEmployee Information from file:\n";
+    for(i = 0; i < total; i++) {
+        Employee e;
+        e.readFromFile(inFile);
+        cout << "\nEmployee " << i+1;
+        e.display();
+    }
+    inFile.close();
+
+    return 0;
 }

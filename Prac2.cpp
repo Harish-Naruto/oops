@@ -23,16 +23,14 @@ public:
         dob = "dd/mm/yyyy";
         bloodgroup = "";
     }
-
-    // Removed destructor since we no longer use dynamic memory for division and bloodgroup
     
     static int getCount()
     {
         return count;
     }
 
-    void getData(StudData*);
-    void dispData(StudData*);
+    void getData(StudData*); //declear as inline function later
+    void dispData(StudData*); //declear as inline function later
 };
 
 class StudData {

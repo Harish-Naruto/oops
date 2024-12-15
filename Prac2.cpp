@@ -8,9 +8,9 @@ class Student {
     string name;
     int roll_no;
     string cls;
-    string division;    // Changed from char* to string
+    string division;    
     string dob;
-    string bloodgroup;  // Changed from char* to string
+    string bloodgroup;  
     static int count;
 
 public:
@@ -116,7 +116,7 @@ int main()
     {
         stud1[n] = new Student;
         stud2[n] = new StudData;
-        stud1[n]->getData(stud2[n]);
+        stud1[n]->getData(stud2[n]);//copy constructor
         n++;
         cout << "Do you want to add another student (y/n) : ";
         cin >> ch;

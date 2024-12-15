@@ -1,146 +1,144 @@
-#include<iostream>
-#include<string>
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
 using namespace std;
 
-class StudData;
+// Simple Item class
+class Item {
+    public:
+        string name;
+        int quantity;
+        int cost;
+        int code;
 
-class Student {
-    string name;
-    int roll_no;
-    string cls;
-    string division;    // Changed from char* to string
-    string dob;
-    string bloodgroup;  // Changed from char* to string
-    static int count;
+        // Input item details
+        void input() {
+            cout << "\nEnter Item Name: ";
+            cin >> name;
+            cout << "Enter Quantity: ";
+            cin >> quantity;
+            cout << "Enter Cost: ";
+            cin >> cost;
+            cout << "Enter Code: ";
+            cin >> code;
+        }
 
-public:
-    Student()          // Default Constructor
-    {
-        name = "";
-        roll_no = 0;
-        cls = "";
-        division = "";
-        dob = "dd/mm/yyyy";
-        bloodgroup = "";
-    }
-
-    // Removed destructor since we no longer use dynamic memory for division and bloodgroup
-    
-    static int getCount()
-    {
-        return count;
-    }
-
-    void getData(StudData*);
-    void dispData(StudData*);
+        // Display item details
+        void display() {
+            cout << "\nName: " << name
+                 << "\nQuantity: " << quantity
+                 << "\nCost: " << cost
+                 << "\nCode: " << code << endl;
+        }
 };
 
-class StudData {
-    string caddress;
-    long int* telno;
-    long int* dlno;
-    friend class Student;
+class ItemStore {
+    private:
+        vector<Item> items;
 
-public:
-    StudData()
-    {
-        caddress = "";
-        telno = new long;
-        dlno = new long;
-    }
+    public:
+        // Add new item
+        void addItem() {
+            Item item;
+            item.input();
+            items.push_back(item);
+            cout << "\nItem added successfully!" << endl;
+        }
 
-    void getStudData()
-    {
-        cout << "Enter Contact Address : ";
-        cin.get();
-        getline(cin, caddress);
-        cout << "Enter Telephone Number : ";
-        cin >> *telno;
-        cout << "Enter Driving License Number : ";
-        cin >> *dlno;
-    }
+        // Display all items
+        void displayItems() {
+            if(items.empty()) {
+                cout << "\nNo items in store!" << endl;
+                return;
+            }
+            
+            cout << "\n----Item List----" << endl;
+            for(auto& item : items) {
+                item.display();
+            }
+        }
 
-    void dispStudData()
-    {
-        cout << "Contact Address : " << caddress << endl;
-        cout << "Telephone Number : " << *telno << endl;
-        cout << "Driving License Number : " << *dlno << endl;
-    }
+        // Search item by code
+        void searchItem() {
+            if(items.empty()) {
+                cout << "\nNo items in store!" << endl;
+                return;
+            }
 
-    ~StudData()
-    {
-        delete telno;
-        delete dlno;
-    }
+            int code;
+            cout << "\nEnter Item Code to search: ";
+            cin >> code;
+
+            for(auto& item : items) {
+                if(item.code == code) {
+                    cout << "\nItem Found:" << endl;
+                    item.display();
+                    return;
+                }
+            }
+            cout << "\nItem not found!" << endl;
+        }
+
+        // Sort items by cost
+        void sortItems() {
+            if(items.empty()) {
+                cout << "\nNo items to sort!" << endl;
+                return;
+            }
+
+            sort(items.begin(), items.end(), 
+                [](Item& a, Item& b) { return a.cost < b.cost; });
+            cout << "\nItems sorted by cost!" << endl;
+        }
+
+        // Delete item by code
+        void deleteItem() {
+            if(items.empty()) {
+                cout << "\nNo items to delete!" << endl;
+                return;
+            }
+
+            int code;
+            cout << "\nEnter Item Code to delete: ";
+            cin >> code;
+
+            for(auto it = items.begin(); it != items.end(); ++it) {
+                if(it->code == code) {
+                    items.erase(it);
+                    cout << "\nItem deleted successfully!" << endl;
+                    return;
+                }
+            }
+            cout << "\nItem not found!" << endl;
+        }
 };
 
-inline void Student::getData(StudData* st)
-{
-    cout << "Enter Student Name : ";
-    getline(cin, name);
-    cout << "Enter Roll Number : ";
-    cin >> roll_no;
-    cout << "Enter Class : ";
-    cin.get();
-    getline(cin, cls);
-    cout << "Enter Division : ";
-    cin.get();
-    getline(cin, division);  // Changed to use getline for string
-    cout << "Enter Date of Birth : ";
-    getline(cin, dob);
-    cout << "Enter Blood Group : ";
-    getline(cin, bloodgroup);  // Changed to use getline for string
-    st->getStudData();
-    count++;
-}
+int main() {
+    ItemStore store;
+    int choice;
 
-inline void Student::dispData(StudData* st1)
-{
-    cout << "Student Name : " << name << endl;
-    cout << "Roll Number : " << roll_no << endl;
-    cout << "Class : " << cls << endl;
-    cout << "Division : " << division << endl;
-    cout << "Date of Birth : " << dob << endl;
-    cout << "Blood Group : " << bloodgroup << endl;
-    st1->dispStudData();
-}
+    do {
+        cout << "\n=== Item Management System ===" << endl;
+        cout << "1. Add Item" << endl;
+        cout << "2. Display All Items" << endl;
+        cout << "3. Search Item" << endl;
+        cout << "4. Sort Items by Cost" << endl;
+        cout << "5. Delete Item" << endl;
+        cout << "6. Exit" << endl;
+        cout << "Enter your choice: ";
+        cin >> choice;
 
-int Student::count;
-
-int main()
-{
-    Student* stud1[100];
-    StudData* stud2[100];
-    int n = 0;
-    char ch;
-
-    do
-    {
-        stud1[n] = new Student;
-        stud2[n] = new StudData;
-        stud1[n]->getData(stud2[n]);
-        n++;
-        cout << "Do you want to add another student (y/n) : ";
-        cin >> ch;
-        cin.get();  // Added to consume newline
-        cout << endl;
-    } while (ch == 'y' || ch == 'Y');
-
-    for(int i = 0; i < n; i++)
-    {
-        cout << "---------------------------------------------------------------" << endl;
-        stud1[i]->dispData(stud2[i]);
-    }
-
-    cout << "---------------------------------------------------------------" << endl;
-    cout << "Total Students : " << Student::getCount();
-    cout << endl << "---------------------------------------------------------------" << endl;
-
-    for(int i = 0; i < n; i++)
-    {
-        delete stud1[i];
-        delete stud2[i];
-    }
+        switch(choice) {
+            case 1: store.addItem(); break;
+            case 2: store.displayItems(); break;
+            case 3: store.searchItem(); break;
+            case 4: store.sortItems(); break;
+            case 5: store.deleteItem(); break;
+            case 6: cout << "\nExiting program...\n"; break;
+            default: cout << "\nInvalid choice! Try again.\n";
+        }
+    } while(choice != 6);
 
     return 0;
 }

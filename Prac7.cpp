@@ -32,7 +32,7 @@ int main() {
             case 1:
                 // Display all states and their populations
                 cout << "\nPopulation of all states:\n";
-                for(const auto& state : statePopulation) {
+                for(auto state : statePopulation) {
                     cout << state.first << ": " << state.second << " million\n";
                 }
                 break;
